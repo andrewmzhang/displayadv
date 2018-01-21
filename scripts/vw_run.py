@@ -62,13 +62,14 @@ class Option(Enum):
 
 def train(fname, option, passes, shfl_win):
     feeder = 'zcat %s | cut -f2 | python ../scripts/shuffle.py %s | ' % (fname, shfl_win)
-    loss = '--loss_function logistic'
+    loss = '--span_server 127.0.0.1 --total 2 --node 0 --loss_function logistic'
     bits =  '-b 27'
     pass_args = '--passes %s --holdout_off -C -0.4878' % passes
     features = Option.features(option)
     update = '--adaptive --invariant --power_t 0.5'
-    io = '-c --compressed -f log_bin.model -k'
+    io = '-c --compressed -f log_bin.model -k -P 500000'
     command = ' '.join([feeder, VW, loss, bits, pass_args, features, update,io])
+    print("Command:", command)
     subprocess.call(command, stdout=sys.stdout, shell=True, executable='/bin/bash')
     
 
